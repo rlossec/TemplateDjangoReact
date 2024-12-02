@@ -33,5 +33,3 @@ CMD ["run"]
 
 # Expose port
 EXPOSE 3200
-
-CMD exec gunicorn server_rest.wsgi:application --bind 0.0.0.0:3200 --workers 3
