@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from accounts.tests.template_error_message import MANDATORY_FIELD_ERROR_MESSAGE, EXPIRED_TOKEN_ERROR_MESSAGE, \
+    INVALID_CREDENTIALS_ERROR_MESSAGE
+
 User = get_user_model()
 
 
@@ -46,7 +49,7 @@ class TestJWTEndpoints(APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn('detail', response.data)
-        self.assertEqual(response.data['detail'], 'No active account found with the given credentials')
+        self.assertEqual(response.data['detail'], INVALID_CREDENTIALS_ERROR_MESSAGE)
 
     def test_jwt_create_invalid_credentials(self):
         """Test pour vérifier que des identifiants invalides ne génèrent pas de token"""
@@ -56,7 +59,7 @@ class TestJWTEndpoints(APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn('detail', response.data)
-        self.assertEqual(response.data['detail'], 'No active account found with the given credentials')
+        self.assertEqual(response.data['detail'], INVALID_CREDENTIALS_ERROR_MESSAGE)
         self.assertNotIn('access', response.data)
         self.assertNotIn('refresh', response.data)
 
@@ -65,12 +68,12 @@ class TestJWTEndpoints(APITestCase):
         response = self.client.post(self.jwt_create_url, {'username': 'testuser'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('password', response.data)
-        self.assertEqual(response.data['password'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['password'][0], MANDATORY_FIELD_ERROR_MESSAGE)
 
         response = self.client.post(self.jwt_create_url, {'password': 'password123'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('username', response.data)
-        self.assertEqual(response.data['username'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['username'][0], MANDATORY_FIELD_ERROR_MESSAGE)
 
     # Refresh
     def test_jwt_refresh(self):
@@ -91,14 +94,14 @@ class TestJWTEndpoints(APITestCase):
         response = self.client.post(self.jwt_refresh_url, {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('refresh', response.data)
-        self.assertEqual(response.data['refresh'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['refresh'][0], MANDATORY_FIELD_ERROR_MESSAGE)
 
     def test_jwt_refresh_invalid_token(self):
         """Test pour vérifier l'erreur de champ manquant pour jwt-refresh"""
         response = self.client.post(self.jwt_refresh_url, {'refresh': "invalid_token"})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn('detail', response.data)
-        self.assertEqual(response.data['detail'], 'Token is invalid or expired')
+        self.assertEqual(response.data['detail'], EXPIRED_TOKEN_ERROR_MESSAGE)
         self.assertIn('code', response.data)
         self.assertEqual(response.data['code'], 'token_not_valid')
 
@@ -122,7 +125,7 @@ class TestJWTEndpoints(APITestCase):
         response = self.client.post(self.jwt_verify_url, {'token': invalid_token})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn('detail', response.data)
-        self.assertEqual(response.data['detail'], 'Token is invalid or expired')
+        self.assertEqual(response.data['detail'], EXPIRED_TOKEN_ERROR_MESSAGE)
         self.assertIn('code', response.data)
         self.assertEqual(response.data['code'], 'token_not_valid')
 
@@ -131,7 +134,7 @@ class TestJWTEndpoints(APITestCase):
         response = self.client.post(self.jwt_verify_url, {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('token', response.data)
-        self.assertEqual(response.data['token'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['token'][0], MANDATORY_FIELD_ERROR_MESSAGE)
 
     def test_jwt_tokens_validity(self):
         """Test pour vérifier que les tokens sont valides"""

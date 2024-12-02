@@ -8,6 +8,9 @@ from rest_framework import status
 
 from djoser import utils
 
+from accounts.tests.template_error_message import MANDATORY_FIELD_ERROR_MESSAGE,  \
+    INVALID_EMAIL_ERROR_MESSAGE, INVALID_TOKEN_ERROR_MESSAGE, INVALID_USER_ERROR_MESSAGE
+
 User = get_user_model()
 
 
@@ -51,9 +54,9 @@ class TestActivationEndpoints(APITestCase):
         response = self.client.post(self.activation_url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("uid", response.data)
-        self.assertEqual(response.data['uid'][0], 'This field is required.')
+        self.assertEqual(response.data['uid'][0], MANDATORY_FIELD_ERROR_MESSAGE)
         self.assertIn("token", response.data)
-        self.assertEqual(response.data['token'][0], 'This field is required.')
+        self.assertEqual(response.data['token'][0], MANDATORY_FIELD_ERROR_MESSAGE)
 
     ## Invalid fields
     def test_activation_invalid_uid(self):
@@ -62,7 +65,7 @@ class TestActivationEndpoints(APITestCase):
         response = self.client.post(self.activation_url, {"uid": "invalid_uid", "token": token})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("uid", response.data)
-        self.assertEqual(response.data['uid'][0], "Invalid user id or user doesn't exist.")
+        self.assertEqual(response.data['uid'][0], INVALID_USER_ERROR_MESSAGE)
 
     def test_activation_invalid_token(self):
         """Test d'échec d'activation avec un uid ou un token invalides"""
@@ -70,7 +73,7 @@ class TestActivationEndpoints(APITestCase):
         response = self.client.post(self.activation_url, {"uid": uid, "token": "invalid_token"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("token", response.data)
-        self.assertEqual(response.data['token'][0], "Invalid token for given user.")
+        self.assertEqual(response.data['token'][0], INVALID_TOKEN_ERROR_MESSAGE)
 
     # Already activate
     def test_activation_already_active_account(self):
@@ -96,14 +99,14 @@ class TestActivationEndpoints(APITestCase):
         response = self.client.post(self.resend_activation_url, {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response.data)
-        self.assertEqual(response.data['email'][0], 'This field is required.')
+        self.assertEqual(response.data['email'][0], MANDATORY_FIELD_ERROR_MESSAGE)
 
     ## Invalid field
     def test_resend_activation_email_invalid_format(self):
         """Test d'échec de renvoi d'email d'activation avec un format d'email invalide"""
         response = self.client.post(self.resend_activation_url, {"email": "invalid-email-format"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['email'][0], 'Enter a valid email address.')
+        self.assertEqual(response.data['email'][0], INVALID_EMAIL_ERROR_MESSAGE)
 
     ## Email not found
     def test_resend_activation_unknow_email(self):

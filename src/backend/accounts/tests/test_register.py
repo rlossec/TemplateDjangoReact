@@ -4,6 +4,10 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from accounts.tests.template_error_message import USERNAME_ALREADY_TAKEN_ERROR_MESSAGE, \
+    PASSWORD_TOO_SHORT_ERROR_MESSAGE, PASSWORD_TOO_CLOSE_USERNAME_ERROR_MESSAGE, TOO_COMMON_PASSWORD_ERROR_MESSAGE, \
+    EMAIL_ALREADY_TAKEN_ERROR_MESSAGE
+
 
 class TestRegister(APITestCase):
     def setUp(self):
@@ -84,7 +88,7 @@ class TestRegister(APITestCase):
         response = self.client.post(self.url, invalid_payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
-        self.assertIn("Le mot de passe est trop semblable au champ « nom d’utilisateur ».", response.data['password'])
+        self.assertIn(PASSWORD_TOO_CLOSE_USERNAME_ERROR_MESSAGE, response.data['password'])
 
     def test_registration_username_already_registered(self):
         """Test si le nom d'utilisateur est déjà utilisé par un autre utilisateur"""
@@ -103,7 +107,7 @@ class TestRegister(APITestCase):
         # Vérification de la réponse
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('username', response.data)
-        self.assertIn("Un utilisateur avec ce nom existe déjà.", response.data["username"])
+        self.assertIn(USERNAME_ALREADY_TAKEN_ERROR_MESSAGE, response.data["username"])
 
     ## Email validation
     def test_registration_invalid_email(self):
@@ -133,7 +137,7 @@ class TestRegister(APITestCase):
         # Vérification de la réponse
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('email', response.data)
-        self.assertIn("Un objet utilisateur avec ce champ email existe déjà.", response.data["email"])
+        self.assertIn(EMAIL_ALREADY_TAKEN_ERROR_MESSAGE, response.data["email"])
 
     ## Password validation
     def test_registration_passwords_do_not_match(self):
@@ -155,7 +159,7 @@ class TestRegister(APITestCase):
         response = self.client.post(self.url, invalid_payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
-        self.assertIn("Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères.", response.data["password"])
+        self.assertIn(PASSWORD_TOO_SHORT_ERROR_MESSAGE, response.data["password"])
 
     def test_registration_password_common(self):
         common_passwords = [
@@ -172,7 +176,7 @@ class TestRegister(APITestCase):
             response = self.client.post(self.url, invalid_payload, format='json')
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertIn("password", response.data)
-            self.assertIn("Ce mot de passe est trop courant.", response.data["password"])
+            self.assertIn(TOO_COMMON_PASSWORD_ERROR_MESSAGE, response.data["password"])
 
     def test_registration_password_numeric_only(self):
         invalid_payload = {
@@ -184,5 +188,5 @@ class TestRegister(APITestCase):
         response = self.client.post(self.url, invalid_payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
-        self.assertIn("Ce mot de passe est trop courant.", response.data["password"])
+        self.assertIn(TOO_COMMON_PASSWORD_ERROR_MESSAGE, response.data["password"])
 
