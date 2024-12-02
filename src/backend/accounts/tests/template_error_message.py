@@ -10,4 +10,5 @@ EMAIL_ALREADY_TAKEN_ERROR_MESSAGE = 'user with this email already exists.'
 PASSWORD_TOO_SHORT_ERROR_MESSAGE = 'This password is too short. It must contain at least 8 characters.'
 PASSWORD_TOO_CLOSE_USERNAME_ERROR_MESSAGE = 'The password is too similar to the username.'
 TOO_COMMON_PASSWORD_ERROR_MESSAGE = 'This password is too common.'
-
+NO_PERMISSION_ERROR_MESSAGE = 'You do not have permission to perform this action.'
+AUTHENTICATION_MISSING = "Authentication credentials were not provided."
