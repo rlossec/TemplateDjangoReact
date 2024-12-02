@@ -51,9 +51,9 @@ class TestActivationEndpoints(APITestCase):
         response = self.client.post(self.activation_url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("uid", response.data)
-        self.assertEqual(response.data['uid'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['uid'][0], 'This field is required.')
         self.assertIn("token", response.data)
-        self.assertEqual(response.data['token'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['token'][0], 'This field is required.')
 
     ## Invalid fields
     def test_activation_invalid_uid(self):
@@ -96,14 +96,14 @@ class TestActivationEndpoints(APITestCase):
         response = self.client.post(self.resend_activation_url, {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response.data)
-        self.assertEqual(response.data['email'][0], 'Ce champ est obligatoire.')
+        self.assertEqual(response.data['email'][0], 'This field is required.')
 
     ## Invalid field
     def test_resend_activation_email_invalid_format(self):
         """Test d'échec de renvoi d'email d'activation avec un format d'email invalide"""
         response = self.client.post(self.resend_activation_url, {"email": "invalid-email-format"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['email'][0], 'Saisissez une adresse e-mail valide.')
+        self.assertEqual(response.data['email'][0], 'Enter a valid email address.')
 
     ## Email not found
     def test_resend_activation_unknow_email(self):
