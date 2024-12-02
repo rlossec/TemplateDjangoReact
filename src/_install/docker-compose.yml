@@ -1,0 +1,95 @@
+services:
+
+  react-front:
+    build:
+      context: ./_containers/react-front
+      dockerfile: Dockerfile
+    image: react-front:0.1.0
+    container_name: "react-front"
+    hostname: react-front
+    env_file: ./_containers/react-front/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./../frontend:/app/
+      - /app/node_modules
+    networks:
+      - net-web
+
+  django-api:
+    image: django-api-image:0.1.0
+    container_name: "django-api"
+    hostname: django-api
+    build:
+      context: ./_containers/django-api
+      dockerfile: Dockerfile
+    env_file:
+      - ./_containers/django-api/.env
+    command: python manage.py runserver 0.0.0.0:3200
+    ports:
+      - "3200:3200"
+    expose:
+      - 3200
+    volumes:
+      - ./../backend/:/usr/src/app/
+    depends_on:
+      - db_postgres
+    networks:
+      - net-postgresql
+      - net-web
+
+  db_postgres:
+    image: postgres:15.3
+    container_name: "db_postgres"
+    hostname: db_postgres
+    env_file:
+      - ./_containers/postgresql/.env
+    expose:
+      - 5432
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./_containers/postgresql:/docker-entrypoint-initdb.d
+    networks:
+      - net-postgresql
+      - net-web
+
+  pgadmin:
+    image: dpage/pgadmin4:6.13
+    container_name: "pgadmin_container"
+    hostname: pgadmin
+
+    env_file:
+      - ./_containers/pgadmin/.env
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db_postgres
+    networks:
+      - net-postgresql
+      - net-web
+
+  smtp:
+    image: mailhog/mailhog
+    container_name: "smtp"
+    hostname: smtp
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - net-web
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  net-postgresql:
+    name: net-postgresql
+    driver: bridge
+  net-web:
+    name: net-web
+    driver: bridge
