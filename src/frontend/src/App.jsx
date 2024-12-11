@@ -7,6 +7,11 @@ import { ActivatePage } from "./pages/authentication/ActivatePage";
 import { EmailSentPage } from "./pages/authentication/EmailSentPage";
 import { ResendActivationPage } from "./pages/authentication/ResendActivationPage";
 
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { UnauthorizedPage } from "./pages/UnauthorizedPage";
+
+import { HomePage } from "./pages/HomePage";
+
 import "./App.css";
 
 
@@ -22,8 +27,19 @@ function App() {
 
         <Route path="/auth/activate/:uid/:token" element={<ActivatePage />} />
         <Route path="/auth/email-sent/" element={<EmailSentPage />} />
-        <Route path="/auth/resend-activation/" element={<ResendActivationPage />}
+        <Route path="/auth/resend-activation/" element={<ResendActivationPage />} />
+
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <HomePage />
+            </PrivateRoute>
+          }
         />
+
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="*" element={<NotFoundPage />} />
 
       </Routes>
     </BrowserRouter>
