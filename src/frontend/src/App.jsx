@@ -9,11 +9,15 @@ import { ResendActivationPage } from "./pages/authentication/ResendActivationPag
 import { PasswordResetPage } from "./pages/authentication/PasswordResetPage";
 import { PasswordResetConfirmPage } from "./pages/authentication/PasswordResetConfirmPage";
 
+import { PrivateRoute } from "./utils/PrivateRoute";
+
+import { HomePage } from "./pages/HomePage";
+import { ProfilePage } from "./pages/profile/ProfilePage";
+import { PasswordChangePage } from "./pages/profile/PasswordChangePage";
+import { EmailChangePage } from "./pages/profile/EmailChangePage";
 
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
-
-import { HomePage } from "./pages/HomePage";
 
 import "./App.css";
 
@@ -39,6 +43,33 @@ function App() {
           element={
             <PrivateRoute>
               <HomePage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile/"
+          element={
+            <PrivateRoute>
+              <ProfilePage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile/change-password/"
+          element={
+            <PrivateRoute>
+              <PasswordChangePage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile/change-email/"
+          element={
+            <PrivateRoute>
+              <EmailChangePage />
             </PrivateRoute>
           }
         />
