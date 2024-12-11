@@ -6,6 +6,9 @@ import { LogoutPage } from "./pages/authentication/LogoutPage";
 import { ActivatePage } from "./pages/authentication/ActivatePage";
 import { EmailSentPage } from "./pages/authentication/EmailSentPage";
 import { ResendActivationPage } from "./pages/authentication/ResendActivationPage";
+import { PasswordResetPage } from "./pages/authentication/PasswordResetPage";
+import { PasswordResetConfirmPage } from "./pages/authentication/PasswordResetConfirmPage";
+
 
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
@@ -28,6 +31,8 @@ function App() {
         <Route path="/auth/activate/:uid/:token" element={<ActivatePage />} />
         <Route path="/auth/email-sent/" element={<EmailSentPage />} />
         <Route path="/auth/resend-activation/" element={<ResendActivationPage />} />
+        <Route path="/auth/password/reset/" element={<PasswordResetPage />} />
+        <Route path="/auth/password/reset/confirm/:uid/:token" element={<PasswordResetConfirmPage />} />
 
         <Route
           path="/"
