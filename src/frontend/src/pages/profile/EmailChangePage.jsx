@@ -2,69 +2,77 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
+  Grid,
   TextField,
   Button,
   Card,
   CardContent,
   CardHeader,
-  Grid,
-  Typography,
+  Alert,
 } from "@mui/material";
+import { CustomAppBar } from "../../components/CustomAppBar";
 import { useAuthStore } from "../../stores/authStore";
-import { apiFetch } from "../../utils/apiFetch";
 
 export const EmailChangePage = () => {
   const [newEmail, setNewEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const { user } = useAuthStore();
+  const [error, setError] = useState(null);
+  const { changeEmail } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSaving(true);
+    setError(null);
 
-    try {
-      await apiFetch("PATCH", `auth/users/${user.id}/`, { email: newEmail });
-      navigate("/profile");
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de l'email", error);
-    }
+    const result = await changeEmail(newEmail);
     setIsSaving(false);
+    if (result.success) {
+      navigate("/auth/email-sent/");
+    } else {
+      setError(result.error);
+    }
   };
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Changer l'email
-      </Typography>
-      <Card>
-        <CardHeader title="Modifier l'adresse email" />
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Nouvelle adresse email"
-                  variant="outlined"
-                  required
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              fullWidth
-              disabled={isSaving}
-            >
-              {isSaving ? "Sauvegarde..." : "Sauvegarder"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </Container>
+    <CustomAppBar page="Profil - Email">
+      <Container>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader title="Modifier l'adresse email" />
+              <CardContent>
+                {error &&
+                  error.detail(
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                      {error.detail}
+                    </Alert>
+                  )}
+                <form onSubmit={handleSubmit}>
+                  <TextField
+                    fullWidth
+                    label="Nouvelle adresse email"
+                    variant="outlined"
+                    required
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    fullWidth
+                    disabled={isSaving}
+                    sx={{ mt: 2 }}
+                  >
+                    {isSaving ? "Sauvegarde..." : "Sauvegarder"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </CustomAppBar>
   );
 };

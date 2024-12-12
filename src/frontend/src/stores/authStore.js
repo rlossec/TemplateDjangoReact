@@ -181,4 +181,39 @@ export const useAuthStore = create((set) => ({
       return false;
     }
   },
+
+  changeEmail: async (newEmail) => {
+    const { user, clearTokens } = useAuthStore.getState();
+    try {
+      await apiFetch("PATCH", `auth/users/${user?.id}/`, { email: newEmail });
+      clearTokens();
+      return { success: true };
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'email", error);
+      return {
+        success: false,
+        error: error.response?.data || "Une erreur s'est produite",
+      };
+    }
+  },
+
+  changePassword: async (currentPassword, newPassword) => {
+    try {
+      await apiFetch("POST", "auth/users/set_password/", {
+        current_password: currentPassword,
+        new_password: newPassword,
+      });
+
+      // Le mot de passe a été changé avec succès, on déconnecte l'utilisateur
+      useAuthStore.getState().clearTokens();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mot de passe", error);
+      return {
+        success: false,
+        error: error.response?.data || "Une erreur s'est produite",
+      };
+    }
+  },
 }));
