@@ -102,11 +102,10 @@ export function CustomAppBar({ page, children }) {
       <Box
         component="main"
         sx={{
-          p: { lg: 3, xs: 0 },
           width: { lg: `calc(100% - ${drawerWidth}px)`, xs: "100%" },
         }}
       >
-        <Toolbar />
+        <Toolbar sx={{ height: AppBarHeight }} />
         {children}
       </Box>
     </Box>
