@@ -34,7 +34,7 @@ export const PasswordChangePage = () => {
       return;
     }
 
-    const result = await changePassword(currentPassword, newPassword);
+    const result = await changePassword(newPassword, currentPassword);
 
     setIsSaving(false);
 

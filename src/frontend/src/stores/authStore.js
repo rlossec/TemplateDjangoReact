@@ -172,8 +172,13 @@ export const useAuthStore = create((set) => ({
   },
 
   updateUser: async (user, data) => {
+    const formData = new FormData();
+    for (const key in data) {
+      formData.append(key, data[key]);
+    }
+
     try {
-      await apiFetch("PATCH", `auth/users/${user?.id}/`, data);
+      await apiFetch("PATCH", `auth/users/${user?.id}/`, formData);
       set({ user: { ...user, ...data } });
       return true;
     } catch (error) {
@@ -197,19 +202,38 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  changePassword: async (currentPassword, newPassword) => {
+  changePassword: async (newPassword, currentPassword) => {
+    const { clearTokens } = useAuthStore.getState();
     try {
       await apiFetch("POST", "auth/users/set_password/", {
         current_password: currentPassword,
         new_password: newPassword,
       });
-
-      // Le mot de passe a été changé avec succès, on déconnecte l'utilisateur
-      useAuthStore.getState().clearTokens();
-
+      clearTokens();
       return { success: true };
     } catch (error) {
       console.error("Erreur lors de la mise à jour du mot de passe", error);
+      return {
+        success: false,
+        error: error.response?.data || "Une erreur s'est produite",
+      };
+    }
+  },
+
+  changeUsername: async (newUsername, currentPassword) => {
+    const { clearTokens } = useAuthStore.getState();
+    try {
+      await apiFetch("POST", "auth/users/set_username/", {
+        current_password: currentPassword,
+        new_username: newUsername,
+      });
+      clearTokens(); // Forcer la déconnexion
+      return { success: true };
+    } catch (error) {
+      console.error(
+        "Erreur lors de la mise à jour du nom d'utilisateur",
+        error
+      );
       return {
         success: false,
         error: error.response?.data || "Une erreur s'est produite",

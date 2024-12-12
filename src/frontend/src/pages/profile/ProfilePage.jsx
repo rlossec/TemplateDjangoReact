@@ -5,6 +5,7 @@ import {
   Container,
   Grid,
   Box,
+  Typography,
   Button,
   Card,
   CardActions,
@@ -12,9 +13,13 @@ import {
   CardHeader,
   TextField,
   Avatar,
-  Typography,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
-
+import { Edit, CameraAlt } from "@mui/icons-material";
 import { CustomAppBar } from "../../components/CustomAppBar";
 import { useAuthStore } from "../../stores/authStore";
 
@@ -23,6 +28,9 @@ export const ProfilePage = () => {
   const { user, fetchUser, updateUser } = useAuthStore();
   const [formData, setFormData] = useState({ first_name: "", last_name: "" });
   const [isSaving, setIsSaving] = useState(false);
+
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -51,46 +59,80 @@ export const ProfilePage = () => {
     if (success) {
       console.log("Profil mis à jour avec succès");
     }
-
     setIsSaving(false);
   };
 
   const handleChangeEmail = () => navigate("/profile/change-email/");
   const handleChangePassword = () => navigate("/profile/change-password/");
+  const handleChangeUsername = () => navigate("/profile/change-username/");
 
-  if (!user) {
-    return <Typography>Chargement des données utilisateur...</Typography>;
-  }
+  const handleAvatarChange = async () => {
+    if (avatarFile) {
+      const success = await updateUser(user, { avatar: avatarFile });
+      if (success) {
+        setAvatarDialogOpen(false);
+        await fetchUser(); // Recharger les données utilisateur
+        console.log("Avatar mis à jour avec succès");
+      } else {
+        console.error("Erreur lors de la mise à jour de l'avatar");
+      }
+    }
+  };
 
   return (
     <CustomAppBar page="Profil">
-      <Container>
+      <Container sx={{ p: 2 }}>
         <Grid container spacing={3}>
-          {/* Profil utilisateur avec avatar et informations de base */}
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Box
-                  sx={{
-                    alignItems: "center",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Avatar
-                    src={user.avatar}
-                    sx={{ height: 80, mb: 2, width: 80 }}
-                  />
-                  <Typography gutterBottom variant="h5">
-                    {user.username}
-                  </Typography>
-                  <Typography color="textSecondary" variant="body2">
-                    {user.email}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+          {/* Profil utilisateur avec avatar, username en email */}
+          {user ? (
+            <Grid item xs={12} md={4}>
+              <Card>
+                <CardContent>
+                  <Box
+                    sx={{
+                      alignItems: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Box sx={{ position: "relative" }}>
+                      <Avatar
+                        src={user.avatar}
+                        sx={{ height: 80, mb: 2, width: 80 }}
+                      />
+                      <IconButton
+                        sx={{
+                          position: "absolute",
+                          bottom: 0,
+                          right: 0,
+                          bgcolor: "white",
+                        }}
+                        onClick={() => setAvatarDialogOpen(true)}
+                      >
+                        <CameraAlt />
+                      </IconButton>
+                    </Box>
+
+                    <Typography
+                      gutterBottom
+                      variant="h5"
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      {user.username}
+                      <IconButton onClick={handleChangeUsername} sx={{ ml: 1 }}>
+                        <Edit />
+                      </IconButton>
+                    </Typography>
+
+                    <Typography color="textSecondary" variant="body2">
+                      {user.email}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ) : null}
+
           {/* Formulaire d'édition des informations utilisateur */}
           <Grid item xs={12} md={8}>
             <form autoComplete="off" noValidate onSubmit={handleSubmit}>
@@ -143,15 +185,18 @@ export const ProfilePage = () => {
               />
               <CardContent>
                 <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={8}>
-                    <TextField
-                      label="Adresse email"
-                      variant="outlined"
-                      value={user.email}
-                      disabled
-                      fullWidth
-                    />
-                  </Grid>
+                  {user && user.email ? (
+                    <Grid item xs={8}>
+                      <TextField
+                        label="Adresse email"
+                        variant="outlined"
+                        value={user.email}
+                        disabled
+                        fullWidth
+                      />
+                    </Grid>
+                  ) : null}
+
                   <Grid item xs={4}>
                     <Button
                       variant="contained"
@@ -178,6 +223,30 @@ export const ProfilePage = () => {
           </Grid>
         </Grid>
       </Container>
+
+      {/* Dialogue de modification d'avatar */}
+      <Dialog
+        open={avatarDialogOpen}
+        onClose={() => setAvatarDialogOpen(false)}
+      >
+        <DialogTitle>Changer l'avatar</DialogTitle>
+        <DialogContent>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setAvatarFile(e.target.files[0])}
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAvatarDialogOpen(false)} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={handleAvatarChange} color="primary">
+            Valider
+          </Button>
+        </DialogActions>
+      </Dialog>
     </CustomAppBar>
   );
 };
