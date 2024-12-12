@@ -37,21 +37,25 @@ axiosInstance.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!refreshToken) {
+        console.warn("Refresh token is not available. Logging out.");
+        clearTokens();
+        return Promise.reject(error);
+      }
+
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
-          throw new Error("Refresh token is not available.");
-        }
         const response = await refreshAccessToken(refreshToken);
-        console.log(response);
         setTokens(response.access, refreshToken);
         originalRequest.headers["Authorization"] = `Bearer ${response.access}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error("Unable to refresh token", refreshError);
         clearTokens();
-        throw refreshError;
+        return Promise.reject(refreshError);
       }
+
     }
 
     return Promise.reject(error);
