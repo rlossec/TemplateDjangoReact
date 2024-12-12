@@ -187,7 +187,11 @@ export function RegisterPage() {
           }}
         >
           <Box>
-            <Link href="/resend-activation/" variant="body2" underline="hover">
+            <Link
+              href="/auth/resend-activation/"
+              variant="body2"
+              underline="hover"
+            >
               Valider son email
             </Link>
           </Box>
