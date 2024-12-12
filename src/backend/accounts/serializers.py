@@ -24,5 +24,5 @@ class CustomUserSerializer(DjoserUserSerializer):
 
     class Meta(DjoserUserSerializer.Meta):
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name')
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'avatar')
         read_only_fields = ('id', 'username')

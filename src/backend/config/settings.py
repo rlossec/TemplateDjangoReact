@@ -7,10 +7,8 @@ from datetime import timedelta
 
 from django.contrib.auth import password_validation
 
-# Chargez les variables d'environnement à partir du fichier .env
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -34,8 +32,6 @@ CORS_ORIGIN_WHITELIST = [os.getenv("CORS_ORIGIN_WHITELIST")]
 SITE_ID = 1
 AUTH_USER_MODEL = 'accounts.User'
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,7 +47,6 @@ INSTALLED_APPS = [
 
     'accounts',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,9 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -98,10 +91,6 @@ DATABASES = {
         'PORT': POSTGRES_PORT,
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -204,11 +193,11 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR/ 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
