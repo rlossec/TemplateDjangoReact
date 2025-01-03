@@ -17,7 +17,7 @@ export const EmailChangePage = () => {
   const [newEmail, setNewEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-  const { changeEmail } = useAuthStore();
+  const { changeEmail, setActivationEmail } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -28,6 +28,7 @@ export const EmailChangePage = () => {
     const result = await changeEmail(newEmail);
     setIsSaving(false);
     if (result.success) {
+      setActivationEmail(newEmail);
       navigate("/auth/email-sent/");
     } else {
       setError(result.error);

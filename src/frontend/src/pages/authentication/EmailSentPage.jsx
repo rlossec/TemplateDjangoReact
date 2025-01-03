@@ -66,9 +66,9 @@ export const EmailSentPage = () => {
         </Button>
       )}
 
-      {error ? (
+      {error && error.email ? (
         <Alert severity="error" sx={{ mt: 4 }}>
-          {error}
+          {error.email}
         </Alert>
       ) : null}
 

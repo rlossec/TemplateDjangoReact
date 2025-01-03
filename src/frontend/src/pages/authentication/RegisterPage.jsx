@@ -19,9 +19,13 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
   const { registerUser, setActivationEmail } = useAuthStore();
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const [formData, setFormData] = useState({
     username: "",
@@ -40,9 +44,24 @@ export function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!isValidEmail(formData.email)) {
+      setError({ email: "L'adresse email n'est pas valide." });
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.re_password) {
+      setError({
+        re_password: "Les mots de passe ne correspondent pas.",
+        password: "Les mots de passe ne correspondent pas.",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await registerUser(formData);
-      setSuccess(response.success);
       setError(response.error);
       if (response.success) {
         setActivationEmail(formData.email);
@@ -50,6 +69,8 @@ export function RegisterPage() {
       }
     } catch (e) {
       console.log("Erreur d'inscription D", e);
+    } finally {
+      setLoading(false);
     }
   };
 

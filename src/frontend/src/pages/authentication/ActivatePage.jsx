@@ -70,9 +70,9 @@ export const ActivatePage = () => {
     >
       <Typography variant="h4">Vérification de votre compte</Typography>
 
-      {loading ? <CircularProgress sx={{ mt: 4 }} /> : null}
-
-      {verified ? (
+      {loading ? (
+        <CircularProgress sx={{ mt: 4 }} />
+      ) : verified ? (
         <>
           <Alert severity="success" sx={{ mt: 4 }}>
             Votre compte a été vérifié avec succès.

@@ -32,7 +32,7 @@ export const useAuthStore = create((set) => ({
       return {
         isLoading: false,
         success: false,
-        error: e.response?.data || "Une erreur s'est produite",
+        error: e.response?.data || "Une erreur s'est produite D",
       };
     }
   },
